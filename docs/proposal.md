@@ -18,13 +18,23 @@ The engine will sieve out places of interest and F&B outlets (collectively known
 ## Proposed Steps
 
 1. Use LDA model to retrieve a list of Venues
-2. Sort the Venues based on their classification
+2. Sort the Venues based on their ratings/sentiment (retrieved from comments)
 3. Construct a list of Venues based on geographical proximity
 4. Check mix of topics - rerun step 3 if necessary (up to `x` amount of retries)
 
 ## Data
 
-TBD
+1. Venues
+
+| Unique ID                | Venue        | Description         | Rating | Lat               | Long               |
+| ------------------------ | ------------ | ------------------- | ------ | ----------------- | ------------------ |
+| 412d2800f964a520df0c1fe3 | Central Park | Some description... | 9.8    | 40.78408342593807 | -73.96485328674316 |
+
+2. Comments
+
+| Venue ID                 | Comment |
+| -------------------------| ------- |
+| 412d2800f964a520df0c1fe3 | A true lower east side spectacle with a retractable rooftop and dance floor in the basement. Come here for the nights you won't remember with the friends you won't forget! |
 
 ## Methodology
 
