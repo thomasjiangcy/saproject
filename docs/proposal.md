@@ -24,15 +24,17 @@ The engine will sieve out places of interest and F&B outlets (collectively known
 
 ## Data
 
+The tables below represent the essential data we will be working with:
+
 1. Venues
 
 | Unique ID                | Venue        | Description         | Rating | Lat               | Long               |
 | ------------------------ | ------------ | ------------------- | ------ | ----------------- | ------------------ |
 | 412d2800f964a520df0c1fe3 | Central Park | Some description... | 9.8    | 40.78408342593807 | -73.96485328674316 |
 
-2. Comments
+2. Tips
 
-| Venue ID                 | Comment |
+| Venue ID                 | Tip     |
 | -------------------------| ------- |
 | 412d2800f964a520df0c1fe3 | A true lower east side spectacle with a retractable rooftop and dance floor in the basement. Come here for the nights you won't remember with the friends you won't forget! |
 
@@ -56,7 +58,7 @@ Retrieve all Venues that fall into the topics of which the Preferences document 
 
 **2. Sort By Popularity**
 
-TBD
+Sort by compound sentiment score in descending order
 
 **3. List by Geographical Proximity**
 
