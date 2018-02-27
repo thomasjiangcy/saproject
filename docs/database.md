@@ -1,12 +1,12 @@
 # Database
 
-### Venues
+### Venue
 
-| Unique ID                | Venue        | Description         | Rating | Lat               | Long               | Thumbnail             |
+| Unique ID                | Name         | Description         | Rating | Lat               | Long               | Thumbnail             |
 | ------------------------ | ------------ | ------------------- | ------ | ----------------- | ------------------ | --------------------- |
 | 412d2800f964a520df0c1fe3 | Central Park | Some description... | 9.8    | 40.78408342593807 | -73.96485328674316 | someurl/thumbnail.jpg |
 
-### Tips (Comments)
+### Tip (Comments)
 
 | ID | Venue ID                 | Tip     |
 | -- | -------------------------| ------- |
