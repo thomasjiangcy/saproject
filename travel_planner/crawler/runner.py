@@ -5,7 +5,7 @@ import sys
 import requests
 
 from travel_planner.db.connector import Connector
-from travel_planner.crawler.utils import make_request
+from travel_planner.crawler.utils import make_request, crawl_comments
 
 
 # Secrets
@@ -14,6 +14,12 @@ FS_KEY = os.getenv('FS_KEY')
 
 if FS_ID is None or FS_KEY is None:
     raise ValueError('Please set environment variables: FS_ID, FS_KEY')
+
+# Lat/Long
+LAT_LONG = os.getenv('LAT_LONG')
+
+if LAT_LONG is None:
+    raise ValueError('Please set LAT_LONG')
 
 # Some useful constants
 EXPLORE_API = 'https://api.foursquare.com/v2/venues/explore'
@@ -30,14 +36,14 @@ existing_venue_ids = connector.fetch_venue_ids()
 # ------
 # lat, lng = 1.290270, 103.851959
 # radius = 27,000m (Singapore is 50km East-West and 27km North-South)
-print('Fetching up to 50 venues in Singapore...')
+print('Fetching venues in Singapore...')
 
 explore_params = dict(
     client_id=FS_ID,
     client_secret=FS_KEY,
     v=20180227,
-    ll='1.290270, 103.851959',
-    radius=27000,
+    ll=LAT_LONG,
+    radius=100000,
     limit=50
 )
 res = make_request(requests.get, EXPLORE_API, explore_params)
@@ -150,45 +156,38 @@ tips_params = dict(
     limit=500
 )
 
-successfully_added_tips = set()
-
-for venue in successfully_added:
-    res = make_request(requests.get, TIPS_API.format(venue_id=venue), params=tips_params)
-    results = res.json()
-    total_tips_count = results['response']['tips']['count']
-
-    n = 0
-    while n < total_tips_count:
-        if n > 0:
-            print('Current offset for tips results: ', n)
-            tips_params['offset'] = n
-            res = make_request(requests.get, TIPS_API.format(venue_id=venue), tips_params)
-            if res.status_code != 200:
-                # If response status code was anything other than
-                # 200 OK, e.g. if it was 429 Too Many Requests
-                # then we want to display the message and exit gracefully
-                print(res.text)
-                sys.exit(1)
-            results = res.json()
-            if results.get('response') is not None:
-                if results['response'].get('items') is not None:
-                    for r in results['response']['items']:
-                        tip_dict = {
-                            'id': r['id'],
-                            'venue_id': venue,
-                            'tip': r['text']
-                        }
-                        insert_statement = """INSERT INTO tip (id, venue_id, tip) VALUES (%s, %s, %s)"""
-                        connector = Connector()
-                        conn = connector.connection
-                        with conn:
-                            with connector.cursor as cursor:
-                                cursor.execute(insert_statement, tuple(v for v in tip_dict.values()))
-                                print('Inserted into table, comment ID: ', r['id'])
-                                if r['id'] not in successfully_added_tips:
-                                    successfully_added_tips.add(r['id'])
-        i += 500
+if successfully_added:
+    for venue in successfully_added:
+        crawl_comments(TIPS_API, venue, tips_params, Connector)
 
 print('Crawl complete.')
 print('Total venues crawled: ', len(successfully_added))
-print('Total tips crawled: ', len(successfully_added_tips))
+
+# Get current stats
+connector = Connector()
+conn = connector.connection
+with conn:
+    with connector.cursor as cursor:
+        cursor.execute('SELECT COUNT(*) FROM venue;')
+        results = cursor.fetchall()[0][0]
+        print('Current number of venues in DB: ', results)
+
+connector = Connector()
+conn = connector.connection
+with conn:
+    with connector.cursor as cursor:
+        cursor.execute('SELECT COUNT(*) FROM tip;')
+        results = cursor.fetchall()[0][0]
+        print('Current number of tips in DB: ', results)
+
+
+# Crawl more tips
+print('Crawling tips anyway...')
+
+connector = Connector()
+conn = connector.connection
+# Get a list of existing venue ids from the DB again
+existing_venue_ids = connector.fetch_venue_ids()
+
+for vid in existing_venue_ids:
+    crawl_comments(TIPS_API, vid, tips_params, Connector)
