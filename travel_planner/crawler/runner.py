@@ -21,6 +21,11 @@ LAT_LONG = os.getenv('LAT_LONG')
 if LAT_LONG is None:
     raise ValueError('Please set LAT_LONG')
 
+# Double crawl tips
+# This is mainly a workaround for an initial mistake in crawling tips
+_DOUBLE_CRAWL_TIPS = os.getenv('DOUBLE_CRAWL_TIPS')
+DOUBLE_CRAWL_TIPS = _DOUBLE_CRAWL_TIPS == 'True'
+
 # Some useful constants
 EXPLORE_API = 'https://api.foursquare.com/v2/venues/explore'
 VENUES_API = 'https://api.foursquare.com/v2/venues/{venue_id}'
@@ -181,13 +186,16 @@ with conn:
         print('Current number of tips in DB: ', results)
 
 
-# Crawl more tips
-print('Crawling tips anyway...')
+if DOUBLE_CRAWL_TIPS:
+    # Crawl more tips
+    print('Crawling tips anyway...')
 
-connector = Connector()
-conn = connector.connection
-# Get a list of existing venue ids from the DB again
-existing_venue_ids = connector.fetch_venue_ids()
+    connector = Connector()
+    conn = connector.connection
+    # Get a list of existing venue ids from the DB again
+    existing_venue_ids = connector.fetch_venue_ids()
 
-for vid in existing_venue_ids:
-    crawl_comments(TIPS_API, vid, tips_params, Connector)
+    for vid in existing_venue_ids:
+        crawl_comments(TIPS_API, vid, tips_params, Connector)
+
+    print('Finished re-crawling tips.')
