@@ -11,6 +11,7 @@ The user will be required to provide several details as input to the recommendat
 * Number of days in Singapore (1 day = 16 hours)
 * Preferences (Min. 5, the more the better)
 * Instead of preferences, we could also ask the user to type a few words to describe what they are looking for instead?
+* Where they will be staying (the closest Venue to the accomodation will be selected as the starting point)
 
 The engine will sieve out places of interest and F&B outlets (collectively known as Venues) based on various metrics such as ratings, sentiment analysis of comments, as well as proximity between locations (Shortest Path Problem between each location).
 
@@ -60,6 +61,8 @@ Retrieve all Venues that fall into the topics of which the Preferences document 
 
 Sort by compound sentiment score in descending order
 
-**3. List by Geographical Proximity**
+**3. Find Shortest Paths**
 
-Shortest path from point to point. Path weights can be determined by using the [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula) for lat/long coordinates
+Shortest path from point to point. Path weights can be determined by using the [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula) for lat/long coordinates. We must also factor in the time taken to travel as well as the time spent at each Venue.
+
+We will set these as arbitrary constants sufficient for this demonstration.
