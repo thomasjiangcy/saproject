@@ -16,7 +16,11 @@ def make_request(req, uri, params, data=None):
 def crawl_comments(TIPS_API, venue, tips_params, Connector):
     res = make_request(requests.get, TIPS_API.format(venue_id=venue), params=tips_params)
     results = res.json()
-    total_tips_count = results['response']['tips']['count']
+    total_tips_count = 0
+    if results.get('response') is not None and\
+        results['response'].get('tips') is not None and\
+        results['response']['tips'].get('count') is not None:
+            total_tips_count = results['response']['tips']['count']
 
     print('Total tips for %s: %s'% (venue, str(total_tips_count)))
 
