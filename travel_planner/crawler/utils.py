@@ -1,5 +1,7 @@
-import requests
+import json
 import sys
+
+import requests
 
 def make_request(req, uri, params, data=None):
     try:
@@ -59,3 +61,13 @@ def crawl_comments(TIPS_API, venue, tips_params, Connector):
                         except:
                             print('Tip ID %s already exists.' % r['id'])
         n += 500
+
+
+def parse_request_error(res):
+    print('------------------------------------------------')
+    print('REQUEST ERROR')
+    err_res = json.loads(res.text)
+    print('Status code: ', err_res['meta']['code'])
+    print('Error type: ', err_res['meta']['errorType'])
+    print('Error message: ', err_res['meta']['errorDetail'])
+    print('------------------------------------------------')

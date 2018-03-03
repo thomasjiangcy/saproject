@@ -5,7 +5,7 @@ import sys
 import requests
 
 from travel_planner.db.connector import Connector
-from travel_planner.crawler.utils import make_request, crawl_comments
+from travel_planner.crawler.utils import make_request, crawl_comments, parse_request_error
 
 
 # Secrets
@@ -59,7 +59,7 @@ if res.status_code != 200:
     # If response status code was anything other than
     # 200 OK, e.g. if it was 429 Too Many Requests
     # then we want to display the message and exit gracefully
-    print(res.text)
+    parse_request_error(res)
     sys.exit(1)
 results = res.json()
 total_num = results['response']['totalResults']
@@ -81,7 +81,7 @@ while i < total_num:
             # If response status code was anything other than
             # 200 OK, e.g. if it was 429 Too Many Requests
             # then we want to display the message and exit gracefully
-            print(res.text)
+            parse_request_error(res)
             sys.exit(1)
         results = res.json()
         if results.get('response') is not None:
@@ -110,7 +110,7 @@ for vid in venue_ids:
             # If response status code was anything other than
             # 200 OK, e.g. if it was 429 Too Many Requests
             # then we want to display the message and exit gracefully
-            print(res.text)
+            parse_request_error(res)
             sys.exit(1)
         results = res.json()
         if results.get('response') is not None:
