@@ -11,15 +11,18 @@ from travel_planner.crawler.utils import make_request, crawl_comments
 # Secrets
 FS_ID = os.getenv('FS_ID')
 FS_KEY = os.getenv('FS_KEY')
-
 if FS_ID is None or FS_KEY is None:
     raise ValueError('Please set environment variables: FS_ID, FS_KEY')
 
 # Lat/Long
 LAT_LONG = os.getenv('LAT_LONG')
-
 if LAT_LONG is None:
     raise ValueError('Please set LAT_LONG')
+
+# Radius
+RADIUS = os.getenv('RADIUS')
+if RADIUS is None:
+    raise ValueError('Please set RADIUS')
 
 # Double crawl tips
 # This is mainly a workaround for an initial mistake in crawling tips
@@ -48,7 +51,7 @@ explore_params = dict(
     client_secret=FS_KEY,
     v=20180227,
     ll=LAT_LONG,
-    radius=100000,
+    radius=RADIUS,
     limit=50
 )
 res = make_request(requests.get, EXPLORE_API, explore_params)
@@ -118,23 +121,24 @@ for vid in venue_ids:
                     if results['response']['venue']['page'].get('pageInfo') is not None:
                         if results['response']['venue']['page']['pageInfo'].get('description') is not None:
                             description = results['response']['venue']['page']['pageInfo']['description']
-                
-                thumbnail = 'None'
+
+                photo_url = 'None'
                 if results['response']['venue']['photos'].get('groups') is not None:
-                    photos = results['response']['venue']['photos']['groups'][0]['items']
-                    # Get a random photo
-                    index = random.randint(0, (len(photos) -1))
-                    photo_prefix = photos[index]['prefix']
-                    if photo_prefix.endswith('/'):
-                        photo_prefix = photo_prefix[:-1]
-                    photo_suffix = photos[index]['suffix']
-                    photo_url = photo_prefix + photo_suffix
+                    if len(results['response']['venue']['photos']['groups']) > 0:
+                        photos = results['response']['venue']['photos']['groups'][0]['items']
+                        # Get a random photo
+                        index = random.randint(0, (len(photos) -1))
+                        photo_prefix = photos[index]['prefix']
+                        if photo_prefix.endswith('/'):
+                            photo_prefix = photo_prefix[:-1]
+                        photo_suffix = photos[index]['suffix']
+                        photo_url = photo_prefix + photo_suffix
 
                 venue_dict = {
                     'id': results['response']['venue']['id'],
                     'name': results['response']['venue']['name'],
                     'description': description,
-                    'rating': results['response']['venue']['rating'],
+                    'rating': results['response']['venue'].get('rating') or 0,
                     'lat': results['response']['venue']['location']['lat'],
                     'long': results['response']['venue']['location']['lng'],
                     'thumbnail': photo_url
