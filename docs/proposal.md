@@ -74,7 +74,7 @@ Sort by compound sentiment score in descending order
 
 Out of the sorted list, find the Venue that is closest to the user's starting point and set that as the root node. Distances will be calculated using the [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula).
 
-**3. Find Shortest Paths**
+**4. Find Shortest Paths**
 
 Shortest path from point to point. Path weights can be determined by using the [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula), taking into account sentiment, time spent at each location and traveling speed.
 
