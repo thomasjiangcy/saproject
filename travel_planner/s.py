@@ -19,8 +19,8 @@ for tip in connector.fetch_tips():
     results.append(results_dict)
     
     insert_statement = """INSERT INTO sentiment (id, tip_id, compound, positive, neutral, negative) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
-    connectorChee = Connector()
-    conn = connectorChee.connection
+    connector = Connector()
+    conn = connector.connection
     with conn:
-        with connectorChee.cursor as cursor:
+        with connector.cursor as cursor:
             cursor.execute(insert_statement, tuple(v for v in results_dict.values()))
