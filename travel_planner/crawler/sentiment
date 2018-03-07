@@ -7,38 +7,17 @@ import requests
 from travel_planner.db.connector import Connector
 from travel_planner.crawler.utils import make_request, crawl_comments, parse_request_error
 
-
-# Secrets
-FS_ID = '43MDJZVOQJIJYQ2QEQBUU30LTUJSRRMPIGKP42KVLGDLXCHC'
-FS_KEY = 'IGWTYVPERIC1TSKC5WJLYHRU0CK1LL433COQ00J01ZGWJ0BV'
-if FS_ID is None or FS_KEY is None:
-    raise ValueError('Please set environment variables: FS_ID, FS_KEY')
-
-# Lat/Long
-LAT_LONG = '1.3068878,103.7333142'
-if LAT_LONG is None:
-    raise ValueError('Please set LAT_LONG')
-
-# Radius
-RADIUS = '1200'
-if RADIUS is None:
-    raise ValueError('Please set RADIUS')
-
 # Double crawl tips
 # This is mainly a workaround for an initial mistake in crawling tips
 _DOUBLE_CRAWL_TIPS = '<boolean>'
 DOUBLE_CRAWL_TIPS = _DOUBLE_CRAWL_TIPS == 'True'
 
-# Some useful constants
-EXPLORE_API = 'https://api.foursquare.com/v2/venues/explore'
-VENUES_API = 'https://api.foursquare.com/v2/venues/{venue_id}'
-TIPS_API = 'https://api.foursquare.com/v2/venues/{venue_id}/tips'
 
-connector = Connector()
-conn = connector.connection
-# Get a list of existing venue ids from the DB first so we won't add duplicates
-existing_venue_ids = connector.fetch_venue_ids()
-existing_tip_ids=connector.fetch
+
+connectorChee = Connector()
+conn = connectorChee.connection
+# Get a list of existing tip ids from the DB first so we won't add duplicates
+existing_tip_ids=connector.fetch_tip_ids()
 
 # Get list of venues via Explore API (max 50 results each time)
 # Params
@@ -47,30 +26,10 @@ existing_tip_ids=connector.fetch
 # radius = 27,000m (Singapore is 50km East-West and 27km North-South)
 print('Fetching venues in Singapore...')
 
-explore_params = dict(
-    client_id=FS_ID,
-    client_secret=FS_KEY,
-    v=20180227,
-    ll=LAT_LONG,
-    radius=RADIUS,
-    limit=50
-)
-res = make_request(requests.get, EXPLORE_API, explore_params)
-if res.status_code != 200:
-    # If response status code was anything other than
-    # 200 OK, e.g. if it was 429 Too Many Requests
-    # then we want to display the message and exit gracefully
-    parse_request_error(res)
-    sys.exit(1)
-results = res.json()
-total_num = results['response']['totalResults']
 
-print('Total venues retrieved: ', total_num)
-
-print('Going through %d venues...' % total_num)
 
 i = 0
-venue_ids = set()
+tip_ids = set()
 
 # Retrieve more venue ids
 while i < total_num:
