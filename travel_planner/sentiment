@@ -1,5 +1,4 @@
 """
-
 import os
 import random
 import sys
@@ -16,4 +15,32 @@ tips = connectorChee.fetch_tips()
 existing_venue_ids = connectorChee.fetch_venue_ids()
 venues=connectorChee.fetch_venues()
 
+x=[]
+for i in range(len(tips)):
+    x.append(tips[i].id)
+    
+a=[]
+for i in range(len(tips)):
+    a.append(tips[i].content)
+
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+senti_score = SentimentIntensityAnalyzer()
+
+b=[]
+for i in range(len(a)):
+    b.append(senti_score.polarity_scores(a[i])["compound"])
+    
+c=[]
+for i in range(len(a)):
+    c.append(senti_score.polarity_scores(a[i])["pos"])
+
+d=[]
+for i in range(len(a)):
+    d.append(senti_score.polarity_scores(a[i])["neu"])
+
+e=[]
+for i in range(len(a)):
+    e.append(senti_score.polarity_scores(a[i])["neg"])
+y=[]
+for i in range(len(a)):
+    y.append(i+1)
