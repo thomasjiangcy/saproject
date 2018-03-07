@@ -1,0 +1,19 @@
+"""
+
+import os
+import random
+import sys
+
+import requests
+
+from travel_planner.db.connector import Connector
+from travel_planner.crawler.utils import make_request, crawl_comments, parse_request_error
+
+connectorChee = Connector()
+conn = connectorChee.connection
+# Get a list of existing venue ids from the DB first so we won't add duplicates
+tips = connectorChee.fetch_tips()
+existing_venue_ids = connectorChee.fetch_venue_ids()
+venues=connectorChee.fetch_venues()
+
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
