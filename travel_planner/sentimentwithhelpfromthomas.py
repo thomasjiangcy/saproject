@@ -26,9 +26,9 @@ for tip in tips:
     results_dict['id'] = tip.venue_id
     results_dict['tip_id'] = tip.id
    
-insert_statement = """INSERT INTO sentiment (id, tip_id, compound, positive, neutral, negative) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
-connectorChee = Connector()
-conn = connectorChee.connection
-with conn:
-    with connectorChee.cursor as cursor:
-        cursor.execute(insert_statement, tuple(v for v in results_dict.values()))
+    insert_statement = """INSERT INTO sentiment (id, tip_id, compound, positive, neutral, negative) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
+    connectorChee = Connector()
+    conn = connectorChee.connection
+    with conn:
+        with connectorChee.cursor as cursor:
+            cursor.execute(insert_statement, tuple(v for v in results_dict.values()))
