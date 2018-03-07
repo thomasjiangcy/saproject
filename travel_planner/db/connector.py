@@ -55,10 +55,7 @@ class Connector:
         self.cursor.execute('SELECT * FROM tip;')
         try:
             res = self.cursor.fetchall()
-            tips = []
-            for r in res:
-                tip = Tip(r[0], r[1], r[2])
-                tips.append(tip)
+            tips = (Tip(r[0], r[1], r[2]) for r in res)
             return tips
         except Exception as err:
             print('Something went wrong while trying to fetch tips: ' % err)
