@@ -50,8 +50,15 @@ for i in range(len(a)):
 y=[]
 for i in range(len(a)):
     y.append(i+1)
+
 sentiment_dic={'id':y, 'tip_id':x, 'compound':b, 'positive':c, 'neutral':d, 'negative':e}
 
+sentiment_list=[]
+for i in range(len(y)):
+    sen_dic={}
+    sen_dic={'id':y[i],'tip_id':x[i],'compound':b[i],'positive':c[i],'neutral':d[i],'negative':e[i]}
+    sentiment_list.append(sen_dic)   
+    
 # Double crawl tips
 # This is mainly a workaround for an initial mistake in crawling tips
 #_DOUBLE_CRAWL_TIPS = '<boolean>'
@@ -62,5 +69,5 @@ connectorChee = Connector()
 conn = connectorChee.connection
 with conn:
     with connectorChee.cursor as cursor:
-        cursor.execute(insert_statement, tuple(v for v in sentiment_dic.values()))
+        cursor.execute(insert_statement, tuple(v for v in sentiment_list.values()))
                         

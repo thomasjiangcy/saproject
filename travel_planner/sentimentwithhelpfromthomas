@@ -1,0 +1,5 @@
+for tip in all_tips:
+    results_dict = polarity_scores(tip.content)
+    results_dict['id'] = tip.venue_id
+    results_dict['tip_id'] = tip.id
+    # some code to insert into table here
