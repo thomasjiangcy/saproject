@@ -4,9 +4,9 @@ import psycopg2
 from travel_planner.models import Tip, Venue
 
 
-USER = os.getenv('DB_USER')
-HOST = os.getenv('DB_HOST')
-PASSWORD = os.getenv('DB_PASSWORD')
+USER = 'social'
+HOST = '128.199.179.135'
+PASSWORD = 'social'
 
 
 class Connector:
