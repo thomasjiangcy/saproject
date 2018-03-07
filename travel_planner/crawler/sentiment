@@ -31,7 +31,7 @@ print('Fetching venues in Singapore...')
 i = 0
 tip_ids = set()
 
-# Retrieve more venue ids
+# Retrieve more tip ids
 while i < total_num:
     if i > 0:
         print('Current offset for venue results: ', i)
@@ -105,7 +105,7 @@ for vid in venue_ids:
                 }
 
                 # Insert row into table
-                insert_statement = """INSERT INTO venue (id, name, description, rating, lat, long, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
+                insert_statement = """INSERT INTO sentiment (Number, id, compound, pos, neu, neg) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
                 connector = Connector()
                 conn = connector.connection
                 with conn:
