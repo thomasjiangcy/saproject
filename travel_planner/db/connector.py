@@ -52,9 +52,10 @@ class Connector:
             print('Something went wrong while trying to fetch venues: ' % err)
 
     def fetch_tips(self):
-        self.cursor.execute('SELECT * FROM tip;')
+        cursor = self.connection.cursor('tips')
+        cursor.execute('SELECT * FROM tip;')
         try:
-            res = self.cursor.fetchall()
+            res = cursor.fetchall()
             tips = (Tip(r[0], r[1], r[2]) for r in res)
             return tips
         except Exception as err:
