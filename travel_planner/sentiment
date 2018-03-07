@@ -19,8 +19,7 @@ connectorChee = Connector()
 conn = connectorChee.connection
 # Get a list of existing venue ids from the DB first so we won't add duplicates
 tips = connectorChee.fetch_tips()
-existing_venue_ids = connectorChee.fetch_venue_ids()
-venues=connectorChee.fetch_venues()
+existing_tip_ids= connectorChee.fetch_tip_ids()
 
 x=[]
 for i in range(len(tips)):
