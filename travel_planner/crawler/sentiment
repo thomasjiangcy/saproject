@@ -38,6 +38,7 @@ connector = Connector()
 conn = connector.connection
 # Get a list of existing venue ids from the DB first so we won't add duplicates
 existing_venue_ids = connector.fetch_venue_ids()
+existing_tip_ids=connector.fetch
 
 # Get list of venues via Explore API (max 50 results each time)
 # Params
