@@ -62,3 +62,11 @@ class Connector:
             return tips
         except Exception as err:
             print('Something went wrong while trying to fetch tips: ' % err)
+     
+    def fetch_sentiment_ids(self):
+        self.cursor.execute('SELECT id FROM sentiment;')
+        try:
+            res = self.cursor.fetchall()
+            return [r[0] for r in res]  # Parse results into a flat list
+        except Exception as err:
+            print('Something went wrong while trying to fetch sentiment IDs: ' % err)
