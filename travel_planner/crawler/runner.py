@@ -9,24 +9,24 @@ from travel_planner.crawler.utils import make_request, crawl_comments, parse_req
 
 
 # Secrets
-FS_ID = os.getenv('FS_ID')
-FS_KEY = os.getenv('FS_KEY')
+FS_ID = '43MDJZVOQJIJYQ2QEQBUU30LTUJSRRMPIGKP42KVLGDLXCHC'
+FS_KEY = 'IGWTYVPERIC1TSKC5WJLYHRU0CK1LL433COQ00J01ZGWJ0BV'
 if FS_ID is None or FS_KEY is None:
     raise ValueError('Please set environment variables: FS_ID, FS_KEY')
 
 # Lat/Long
-LAT_LONG = os.getenv('LAT_LONG')
+LAT_LONG = '1.3068878,103.7333142'
 if LAT_LONG is None:
     raise ValueError('Please set LAT_LONG')
 
 # Radius
-RADIUS = os.getenv('RADIUS')
+RADIUS = '1200'
 if RADIUS is None:
     raise ValueError('Please set RADIUS')
 
 # Double crawl tips
 # This is mainly a workaround for an initial mistake in crawling tips
-_DOUBLE_CRAWL_TIPS = os.getenv('DOUBLE_CRAWL_TIPS')
+_DOUBLE_CRAWL_TIPS = '<boolean>'
 DOUBLE_CRAWL_TIPS = _DOUBLE_CRAWL_TIPS == 'True'
 
 # Some useful constants
