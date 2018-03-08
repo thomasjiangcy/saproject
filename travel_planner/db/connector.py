@@ -65,6 +65,6 @@ class Connector:
         self.cursor.execute('SELECT tip_id FROM sentiment;')
         try:
             res = self.cursor.fetchall()
-            return [r[1] for r in res]  # Parse results into a flat list
+            return [r[0] for r in res]  # Parse results into a flat list
         except Exception as err:
             print('Something went wrong while trying to fetch sentiment tip IDs: ' % err)
