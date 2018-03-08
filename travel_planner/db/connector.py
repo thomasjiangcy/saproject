@@ -4,9 +4,9 @@ import psycopg2
 from travel_planner.models import Tip, Venue
 
 
-USER = 'social'
-HOST = '128.199.179.135'
-PASSWORD = 'social'
+USER = os.getenv('DB_USER')
+HOST = os.getenv('DB_HOST')
+PASSWORD = os.getenv('DB_PASSWORD')
 
 
 class Connector:
@@ -61,10 +61,10 @@ class Connector:
         except Exception as err:
             print('Something went wrong while trying to fetch tips: ' % err)
      
-    def fetch_sentiment_ids(self):
-        self.cursor.execute('SELECT id FROM sentiment;')
+    def fetch_sentiment_tip_ids(self):
+        self.cursor.execute('SELECT tip_id FROM sentiment;')
         try:
             res = self.cursor.fetchall()
-            return [r[0] for r in res]  # Parse results into a flat list
+            return [r[1] for r in res]  # Parse results into a flat list
         except Exception as err:
-            print('Something went wrong while trying to fetch sentiment IDs: ' % err)
+            print('Something went wrong while trying to fetch sentiment tip IDs: ' % err)

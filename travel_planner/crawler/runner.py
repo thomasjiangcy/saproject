@@ -9,18 +9,18 @@ from travel_planner.crawler.utils import make_request, crawl_comments, parse_req
 
 
 # Secrets
-FS_ID = '43MDJZVOQJIJYQ2QEQBUU30LTUJSRRMPIGKP42KVLGDLXCHC'
-FS_KEY = 'IGWTYVPERIC1TSKC5WJLYHRU0CK1LL433COQ00J01ZGWJ0BV'
+FS_ID = os.getenv('FS_ID')
+FS_KEY = os.getenv('FS_KEY')
 if FS_ID is None or FS_KEY is None:
     raise ValueError('Please set environment variables: FS_ID, FS_KEY')
 
 # Lat/Long
-LAT_LONG = '1.3068878,103.7333142'
+LAT_LONG = os.getenv('LAT_LONG')
 if LAT_LONG is None:
     raise ValueError('Please set LAT_LONG')
 
 # Radius
-RADIUS = '1200'
+RADIUS = os.getenv('RADIUS')
 if RADIUS is None:
     raise ValueError('Please set RADIUS')
 
