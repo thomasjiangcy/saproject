@@ -68,3 +68,11 @@ class Connector:
             return [r[0] for r in res]  # Parse results into a flat list
         except Exception as err:
             print('Something went wrong while trying to fetch sentiment tip IDs: ' % err)
+            
+    def fetch_venues_lda(self):
+        self.cursor.execute('SELECT a.name, a.description, b.content From venue a, tip b where a.id = b.venue_id;')
+        try:
+            res = self.cursor.fetchall()
+            return [(r[0],r[1],r[2]) for r in res]  # Parse results into a flat list
+        except Exception as err:
+            print('Something went wrong while trying to fetch venue IDs: ' % err)
