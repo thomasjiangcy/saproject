@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'planner'
 ]
 
 MIDDLEWARE = [
@@ -140,3 +141,6 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, 'build/webpack-stats.json'),
     }
 }
+
+# CORS
+CORS_ORIGIN_ALLOW_ALL = True

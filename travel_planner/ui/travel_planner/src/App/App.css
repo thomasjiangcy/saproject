@@ -1,0 +1,15 @@
+body {
+  color: #CAF7E2;
+  font-family: "Fredoka One", cursive;
+}
+
+.App {
+  background-color: #58B09C;
+  min-height: 100vh;
+  padding: 20px;
+  width: 100%;
+}
+
+.row {
+  justify-content: center;
+}

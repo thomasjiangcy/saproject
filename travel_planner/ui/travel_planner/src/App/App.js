@@ -1,9 +1,15 @@
 import React, { Component } from "react";
+import axios from "axios";
 
+import "./App.css";
 import Header from "./Header/Header";
-import Loader from './Loader/Loader';
+import Loader from "./Loader/Loader";
 import Results from "./Results/Results";
 import UserInput from "./UserInput/UserInput";
+
+const request = axios.create({
+  baseURL: "http://localhost"
+});
 
 class App extends Component {
   constructor(props) {
@@ -11,17 +17,17 @@ class App extends Component {
     this.state = {
       hours: "",
       preferences: "",
-      accomodation: {
+      accommodation: {
         lat: "",
         lng: ""
       },
-      loading: true,
+      loading: false,
       results: null
     };
 
     this.hoursHandler = this.hoursHandler.bind(this);
     this.preferencesHandler = this.preferencesHandler.bind(this);
-    this.accomodationHandler = this.accomodationHandler.bind(this);
+    this.accommodationHandler = this.accommodationHandler.bind(this);
     this.submitHandler = this.submitHandler.bind(this);
   }
 
@@ -33,42 +39,76 @@ class App extends Component {
     this.setState({ preferences: event.target.value });
   }
 
-  accomodationHandler(lat, lng) {
-    const accomodation = {
+  accommodationHandler(lat, lng) {
+    const accommodation = {
       lat,
       lng
     };
-    this.setState({ accomodation });
+    this.setState({ accommodation });
   }
 
   submitHandler(event) {
     event.preventDefault();
     console.log(this.state);
+    this.setState({ loading: true });
+    request
+      .post("/api/plan/", {
+        hours: this.state.hours,
+        accommodation: this.state.accommodation,
+        preferences: this.state.preferences
+      })
+      .then(res => {
+        console.log(res.data);
+        this.setState({ loading: false });
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({ loading: false });
+      });
   }
 
   render() {
+    let button;
     let results;
-    
+
+    if (this.state.loading) {
+      button = <Loader />;
+    } else {
+      button = (
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={this.submitHandler}
+        >
+          Submit
+        </button>
+      );
+    }
+
     if (this.state.results) {
       results = <Results results={this.state.results} />;
-    } else if (this.state.loading) {
-      results = <Loader />;
     }
 
     return (
       <div className="App">
-        <Header />
-        <UserInput
-          hours={this.state.hours}
-          hoursHandler={this.hoursHandler}
-          preferences={this.state.preferences}
-          preferencesHandler={this.preferencesHandler}
-          accomodationHandler={this.accomodationHandler}
-        />
-        <button type="button" onClick={this.submitHandler}>
-          Submit
-        </button>
-        {results}
+        <div className="container">
+          <div className="row">
+            <Header />
+          </div>
+          <div className="user-input">
+            <div className="row">
+              <UserInput
+                hours={this.state.hours}
+                hoursHandler={this.hoursHandler}
+                preferences={this.state.preferences}
+                preferencesHandler={this.preferencesHandler}
+                accommodationHandler={this.accommodationHandler}
+              />
+            </div>
+            <div className="row">{button}</div>
+          </div>
+          <div className="row">{results}</div>
+        </div>
       </div>
     );
   }

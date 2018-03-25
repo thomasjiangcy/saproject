@@ -1,7 +1,9 @@
 import React from 'react';
 
+import './Header.css';
+
 const header = props => (
-  <div>
+  <div className="Header">
     SG Travel Planner
   </div>
 );
