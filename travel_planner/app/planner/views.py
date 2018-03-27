@@ -28,9 +28,7 @@ class PlanView(APIView):
 
         # Infer topic distributions on user's preferences
 
-        # Filter venues based on venues that are closest to topic distributions
-        # of user's preferences OR use document similarity to retrieve
-        # similar venues
+        # Filter venues based on venues based on document similarity of topics
 
         # Sort the filtered venues based on sentiment score
 
