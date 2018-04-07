@@ -1,4 +1,5 @@
 #!/bin/bash
+python3 /app/scripts/install_nltk_dependencies.py
 python3 /app/scripts/wait_for_db.py
 python3 /app/manage.py makemigrations
 python3 /app/manage.py migrate

@@ -17,6 +17,7 @@ services:
     build: ./app
     volumes:
       - ./app:/app/
+      - ./lda:/app/lda
     command: /app/scripts/start-app.sh
     env_file:
       - settings.env

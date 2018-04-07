@@ -22,7 +22,7 @@ class App extends Component {
         lng: ""
       },
       loading: false,
-      results: null
+      results: []
     };
 
     this.hoursHandler = this.hoursHandler.bind(this);
@@ -49,8 +49,7 @@ class App extends Component {
 
   submitHandler(event) {
     event.preventDefault();
-    console.log(this.state);
-    this.setState({ loading: true });
+    this.setState({ loading: true, results: [] });
     request
       .post("/api/plan/", {
         hours: this.state.hours,
@@ -59,10 +58,9 @@ class App extends Component {
       })
       .then(res => {
         console.log(res.data);
-        this.setState({ loading: false });
+        this.setState({ loading: false, results: res.data });
       })
       .catch(err => {
-        console.log(err);
         this.setState({ loading: false });
       });
   }
@@ -86,7 +84,12 @@ class App extends Component {
     }
 
     if (this.state.results) {
-      results = <Results results={this.state.results} />;
+      results = (
+        <Results
+          results={this.state.results}
+          accommodation={this.state.accommodation}
+        />
+      );
     }
 
     return (

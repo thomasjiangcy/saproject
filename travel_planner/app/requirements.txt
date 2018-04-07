@@ -2,6 +2,9 @@ Django==2.0.3
 django-cors-headers==2.1.0
 djangorestframework==3.7.7
 django-webpack-loader==0.5.0
+gensim==3.4.0
 gunicorn==19.7.1
+networkx==2.1
+nltk==3.2.5
 psycopg2==2.7.4
 requests==2.18.4
