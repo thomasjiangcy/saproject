@@ -17,7 +17,14 @@ class Results extends Component {
       data              : props.results.data
     };
 
+    this.isEqual = this.isEqual.bind(this);
     this.onMapCreated = this.onMapCreated.bind(this);
+  }
+
+  shouldComponentUpdate (nextProps) {
+    const thisData = this.props.results.data;
+    const nextData = nextProps.results.data;
+    return !this.isEqual(thisData, nextData);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -59,6 +66,18 @@ class Results extends Component {
         }
       });
     }
+  }
+
+  isEqual(arr1, arr2) {
+    if (arr1 && arr2) {
+      for (let i = 0; i < arr1.length; i++) {
+        if (arr1[ i ].id !== arr2[ i ].id) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
   }
 
   onMapCreated (map) {
