@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from .utils import (
     tokenize_and_clean, get_topic_dist, filter_venues,
     sort_by_sentiment, retrieve_start_node,
-    get_path, get_distance_dict
+    get_path, get_distance_dict, get_location_topic
 )
 
 TIME_AT_EACH_VENUE = 1  # hour
@@ -83,7 +83,8 @@ class PlanView(APIView):
                 'id': location.id,
                 'name': location.name,
                 'lat': location.lat,
-                'lng': location.long
+                'lng': location.long,
+                'topic_distribution': get_location_topic(location.id)
             }
             parsed_path.append(obj)
 

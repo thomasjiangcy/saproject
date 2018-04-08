@@ -5,6 +5,7 @@ import "./App.css";
 import Header from "./Header/Header";
 import Loader from "./Loader/Loader";
 import Results from "./Results/Results";
+import ResultsTable from './ResultsTable/ResultsTable';
 import UserInput from "./UserInput/UserInput";
 
 const request = axios.create({
@@ -85,16 +86,21 @@ class App extends Component {
 
     if (this.state.results) {
       results = (
-        <Results
-          results={this.state.results}
-          accommodation={this.state.accommodation}
-        />
+        <div className="results-wrapper">
+          <Results
+            results={this.state.results}
+            accommodation={this.state.accommodation}
+          />
+          <ResultsTable
+            results={this.state.results}
+          />
+        </div>
       );
     }
 
     return (
       <div className="App">
-        <div className="container">
+        <div className="container-fluid">
           <div className="row">
             <Header />
           </div>
@@ -110,7 +116,9 @@ class App extends Component {
             </div>
             <div className="row">{button}</div>
           </div>
-          <div className="row">{results}</div>
+          <div className="row">
+            {results}
+          </div>
         </div>
       </div>
     );

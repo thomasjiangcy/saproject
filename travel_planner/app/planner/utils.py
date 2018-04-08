@@ -262,3 +262,13 @@ def get_distance_dict(sorted_venues, starting_point):
                 dists[v.id] = 0
         distances[venue.id] = dists
     return distances
+
+
+def get_location_topic(venue_id):
+    with open(os.path.join(settings.BASE_DIR, 'lda/distribution_dict.pkl'), 'rb') as f:
+        distributions = pickle.load(f)
+    raw_distribution = distributions[venue_id]
+    distribution = {}
+    for dist in raw_distribution:
+        distribution[dist[0]] = dist[1]
+    return distribution

@@ -54,7 +54,15 @@ class Results extends Component {
         origin: origin,
         destination: destination,
         waypoints: waypoints,
-        travelMode: 'DRIVING',
+        optimizeWaypoints: true,
+        travelMode: 'TRANSIT',
+        transitOptions: {
+          modes: [
+            'BUS',
+            'SUBWAY',
+            'TRAIN'
+          ]
+        }
       }, (result, status) => {
         if (status === 'OK') {
           this.setState({
@@ -98,7 +106,7 @@ class Results extends Component {
   
     return (
       <Gmaps
-        width={'800px'}
+        width={'50%'}
         height={'600px'}
         zoom={11}
         lat={coords.lat}

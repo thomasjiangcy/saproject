@@ -15,6 +15,7 @@ import numpy as np
 from gensim import corpora
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
+from nltk.tag import pos_tag
 from nltk.tokenize import word_tokenize
 
 from travel_planner.db.connector import Connector
@@ -50,16 +51,18 @@ else:
         for v in connector.cursor:
             venue = Venue(*v)
             for location in locations_to_skip:
-                if location.lower() in venue.name.lower():
-                    continue
-            print('Fetching all comments for venue: ', venue.name)
-            # Fetch all the comments for this venue
-            conn = Connector()
-            conn.cursor.execute("SELECT content FROM tip WHERE venue_id='%s'" % venue.id)
-            comments = [comment[0] for comment in conn.cursor]
-            print('Number of comments for venue %s: %s' % (venue.name, str(len(comments))))
-            doc = ' '.join([venue.name, venue.description, *comments])
-            documents.append(doc)
+                if not location.lower() in venue.name.lower():
+                    print('Fetching all comments for venue: ', venue.name)
+                    # Fetch all the comments for this venue
+                    conn = Connector()
+                    conn.cursor.execute("SELECT content FROM tip WHERE venue_id='%s'" % venue.id)
+                    comments = [comment[0] for comment in conn.cursor]
+                    print('Number of comments for venue %s: %s' % (venue.name, str(len(comments))))
+                    description = None
+                    if venue.description != 'None' and venue.description != '':
+                        description = venue.description
+                    doc = ' '.join([venue.name, description, *comments])
+                    documents.append(doc)
     
         # Save documents
         with open(os.path.join(CURRENT_DIR, 'documents.pkl'), 'wb') as f:
@@ -85,10 +88,12 @@ else:
         u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
                            "]+", flags=re.UNICODE)
         no_emoji = [emoji_pattern.sub(r'', text) for text in tokenized]  # Remove emojis
-        only_letters = [l.lower() for l in no_emoji if re.findall(r'\w+', l) and not l.isdigit()]
+        only_letters = [' '.join(re.findall(r'[a-zA-Z]+', l)).lower() for l in no_emoji if re.findall(r'[a-zA-Z]+', l)]
         stop_free = [i for i in only_letters if i not in stop]
         punc_free = [ch for ch in stop_free if ch not in exclude]
-        normalized = [lemma.lemmatize(word) for word in punc_free]
+        tagged = pos_tag(punc_free)
+        nouns = [word for word, pos in tagged if (pos == 'NN' or pos == 'NNP' or pos == 'NNS' or pos == 'NNPS')]
+        normalized = [lemma.lemmatize(word) for word in nouns]
         return normalized
 
     print('Clean documents...')
