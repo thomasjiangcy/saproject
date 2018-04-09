@@ -10,7 +10,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
-      - settings.env
+      - .env
   
   web:
     container_name: travel_planner_web
@@ -20,7 +20,7 @@ services:
       - ./lda:/app/lda
     command: /app/scripts/start-app.sh
     env_file:
-      - settings.env
+      - .env
     depends_on:
       - db
   
@@ -30,7 +30,7 @@ services:
     volumes:
       - ./app:/ui_dist
     env_file:
-      - settings.env
+      - .env
   
   nginx:
     container_name: travel_planner_reverse_proxy
