@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Mar 17 19:20:51 2018
-
-@author: Rupini Karthik
-"""
-
 import os
 import pickle
 import re
@@ -122,9 +115,6 @@ else:
         pickle.dump(ldamodel, f, protocol=pickle.HIGHEST_PROTOCOL)
     print('Pickling complete')
 
-# Print LDA model results
-print(ldamodel.print_topics(num_topics=10, num_words=20))
-
 # Output results into CSV
 OUTPUT_PATH = os.path.join(CURRENT_DIR, 'topics.csv')
 ALT_PATH = os.path.join(CURRENT_DIR, 'topics_by_line.csv')
@@ -143,11 +133,6 @@ for i, venue_id in enumerate(connector.cursor):
         distribution.append((i, 0.0))
     distribution = sorted(distribution, key=lambda x: x[0])
     distribution_dict[venue_id[0]] = distribution
-print(distribution_dict)
+
 with open(os.path.join(CURRENT_DIR, 'distribution_dict.pkl'), 'wb') as f:
     pickle.dump(distribution_dict, f, protocol=pickle.HIGHEST_PROTOCOL)
-
-# distribution = np.array([[tup[1] for tup in lst] for lst in ldamodel[doc_term_matrix]])
-# print(distribution.shape)
-# with open(os.path.join(CURRENT_DIR, 'distribution.pkl'), 'wb') as f:
-#     pickle.dump(distribution, f, protocol=pickle.HIGHEST_PROTOCOL)

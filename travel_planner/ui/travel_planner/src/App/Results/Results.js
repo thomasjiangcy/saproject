@@ -92,13 +92,6 @@ class Results extends Component {
   }
 
   render () {
-    // const markers = this.props.results.data ? this.props.results.data.map(location => (
-    //   <Marker
-    //     key={location.id}
-    //     lat={location.lat}
-    //     lng={location.lng}
-    //   />
-    // )) : null;
     const markers = null;
   
     return (
