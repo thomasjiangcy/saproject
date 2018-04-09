@@ -10,7 +10,7 @@ from .utils import (
 )
 
 TIME_AT_EACH_VENUE = 1  # hour
-SPEED_PER_KM = 40  # km/h
+SPEED_PER_KM = 30  # km/h
 
 
 class PlanView(APIView):

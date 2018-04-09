@@ -5,16 +5,16 @@ class ResultsTable extends Component {
     super(props);
     this.state = {
       topics : {
-        0 : 'Shopping & Food',
-        1 : 'Western Food',
-        2 : 'Waffles & Coffee',
+        0 : 'Bar & Grill',
+        1 : 'Seafood',
+        2 : 'Nightlife',
         3 : 'Local Delights',
-        4 : 'Fine Dining & Living',
-        5 : 'South-East Asian Cuisine',
-        6 : 'Dessert',
-        7 : 'Dessert',
-        8 : 'Coffee',
-        9 : 'Seafood'
+        4 : 'Tourist Attractions',
+        5 : 'Dessert',
+        6 : 'Quick Bites',
+        7 : 'Shopping',
+        8 : 'Muslim Cuisine',
+        9 : 'Chinese Cuisine'
       }
     };
     
@@ -32,7 +32,7 @@ class ResultsTable extends Component {
     if (this.props.results.data) {
       results = this.props.results.data.map((location, i) => {
         const labels = Object.keys(location.topic_distribution).map(topic => {
-          if (location.topic_distribution[topic] > 0) {
+          if (location.topic_distribution[topic] > 0.1) {
             return (
               <div className="label" key={topic}>
                 {this.getTopicName(topic)}

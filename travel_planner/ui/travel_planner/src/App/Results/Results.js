@@ -36,8 +36,9 @@ class Results extends Component {
   componentDidUpdate () {
     const { directionsService, directionsDisplay, map } = this.state;
     if (directionsService && directionsDisplay && map && this.state.data) {
-      const origin = new google.maps.LatLng(this.props.accommodation.lat, this.props.accommodation.lng);
-      const destination = this.state.data[ this.props.results.data.length -1 ];
+      const origin = { lat: this.props.accommodation.lat, lng: this.props.accommodation.lng};
+      const destinationData = this.state.data[ this.props.results.data.length -1 ];
+      const destination = { lat: destinationData.lat, lng: destinationData.lng };
       const waypoints = [];
       this.state.data.forEach((location, index) => {
         if (index !== this.state.data.length - 1 ) {
@@ -50,19 +51,14 @@ class Results extends Component {
           });
         }
       });
+      console.log('[Origin] ', origin);
+      console.log(waypoints);
+      console.log('[Destination] ', destination);
       directionsService.route({
         origin: origin,
         destination: destination,
         waypoints: waypoints,
-        optimizeWaypoints: true,
-        travelMode: 'TRANSIT',
-        transitOptions: {
-          modes: [
-            'BUS',
-            'SUBWAY',
-            'TRAIN'
-          ]
-        }
+        travelMode: 'DRIVING'
       }, (result, status) => {
         if (status === 'OK') {
           this.setState({
@@ -96,13 +92,14 @@ class Results extends Component {
   }
 
   render () {
-    const markers = this.props.results.data ? this.props.results.data.map(location => (
-      <Marker
-        key={location.id}
-        lat={location.lat}
-        lng={location.lng}
-      />
-    )) : null;
+    // const markers = this.props.results.data ? this.props.results.data.map(location => (
+    //   <Marker
+    //     key={location.id}
+    //     lat={location.lat}
+    //     lng={location.lng}
+    //   />
+    // )) : null;
+    const markers = null;
   
     return (
       <Gmaps
