@@ -1,0 +1,19 @@
+.user-input {
+  background-color: #2E4052;
+  border-radius: .3rem;
+  min-height: 430px;
+  margin: 15px auto;
+  padding: 20px;
+  transition: height .35s ease-in-out;
+  width: 600px;
+}
+
+.input-group {
+  margin: 15px auto;
+  width: 500px;
+}
+
+textarea {
+  height: 150px;
+  resize: none;
+}
