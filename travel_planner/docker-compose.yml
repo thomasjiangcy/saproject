@@ -1,0 +1,44 @@
+version: '3.3'
+
+volumes:
+  postgres_data: {}
+
+services:
+  db:
+    container_name: travel_planner_db
+    image: postgres:10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - settings.env
+  
+  web:
+    container_name: travel_planner_web
+    build: ./app
+    volumes:
+      - ./app:/app/
+      - ./lda:/app/lda
+    command: /app/scripts/start-app.sh
+    env_file:
+      - settings.env
+    depends_on:
+      - db
+  
+  ui:
+    container_name: travel_planner_ui
+    build: ./ui/
+    volumes:
+      - ./app:/ui_dist
+    env_file:
+      - settings.env
+  
+  nginx:
+    container_name: travel_planner_reverse_proxy
+    build: ./nginx/
+    volumes:
+      - ./app/static:/app/assets
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+  

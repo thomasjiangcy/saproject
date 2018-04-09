@@ -1,19 +1,14 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Mar 17 19:20:51 2018
-
-@author: Rupini Karthik
-"""
-
 import os
 import pickle
 import re
 import string
 
 import gensim
+import numpy as np
 from gensim import corpora
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
+from nltk.tag import pos_tag
 from nltk.tokenize import word_tokenize
 
 from travel_planner.db.connector import Connector
@@ -25,27 +20,46 @@ CURRENT_DIR = os.path.dirname(__file__)
 proceed = input('Build LDA model to overwrite existing model? [y/n]')
 proceed = True if proceed == 'y' else False
 
+reload_documents = input('Retrieve documents from DB again? [y/n]')
+reload_documents = True if reload_documents == 'y' else False
+
 if os.path.isfile(os.path.join(CURRENT_DIR, 'lda.model')) and not proceed:
     print('LDA model exists, loading it into memory...')
     with open(os.path.join(CURRENT_DIR, 'lda.pkl'), 'rb') as f:
         ldamodel = pickle.load(f)
 else:
-    connector = Connector()
-    documents = []
+    if os.path.isfile(os.path.join(CURRENT_DIR, 'documents.pkl')) and not reload_documents:
+        print('Loading documents...')
+        with open(os.path.join(CURRENT_DIR, 'documents.pkl'), 'rb') as f:
+            documents = pickle.load(f)
+    else:
+        connector = Connector()
+        documents = []
+        # Fetch venues in a stream
+        print('Fetching venue data...')
+        connector.cursor.execute('SELECT * FROM venue;')
+        with open(os.path.join(CURRENT_DIR, 'stoplocations'), 'r') as f:
+            locations_to_skip = [x.strip().lower() for x in f.readlines()]
 
-    # Fetch venues in a stream
-    print('Fetching venue data...')
-    connector.cursor.execute('SELECT * FROM venue;')
-    for v in connector.cursor:
-        venue = Venue(*v)
-        print('Fetching all comments for venue: ', venue.name)
-        # Fetch all the comments for this venue
-        conn = Connector()
-        conn.cursor.execute("SELECT content FROM tip WHERE venue_id='%s'" % venue.id)
-        comments = [comment[0] for comment in conn.cursor]
-        print('Number of comments for venue %s: %s' % (venue.name, str(len(comments))))
-        doc = ' '.join([venue.name, venue.description, *comments])
-        documents.append(doc)
+        for v in connector.cursor:
+            venue = Venue(*v)
+            for location in locations_to_skip:
+                if not location.lower() in venue.name.lower():
+                    print('Fetching all comments for venue: ', venue.name)
+                    # Fetch all the comments for this venue
+                    conn = Connector()
+                    conn.cursor.execute("SELECT content FROM tip WHERE venue_id='%s'" % venue.id)
+                    comments = [comment[0] for comment in conn.cursor]
+                    print('Number of comments for venue %s: %s' % (venue.name, str(len(comments))))
+                    description = None
+                    if venue.description != 'None' and venue.description != '':
+                        description = venue.description
+                    doc = ' '.join([venue.name, description, *comments])
+                    documents.append(doc)
+    
+        # Save documents
+        with open(os.path.join(CURRENT_DIR, 'documents.pkl'), 'wb') as f:
+            pickle.dump(documents, f, protocol=pickle.HIGHEST_PROTOCOL)
 
     print('Setting up stopwords...')
     #Pre-processing steps for LDA 
@@ -59,7 +73,7 @@ else:
     lemma = WordNetLemmatizer()
 
     def clean(doc):
-        tokenized = word_tokenize(doc.lower())
+        tokenized = word_tokenize(doc)
         emoji_pattern = re.compile("["
         u"\U0001F600-\U0001F64F"  # emoticons
         u"\U0001F300-\U0001F5FF"  # symbols & pictographs
@@ -67,19 +81,22 @@ else:
         u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
                            "]+", flags=re.UNICODE)
         no_emoji = [emoji_pattern.sub(r'', text) for text in tokenized]  # Remove emojis
-        only_letters = [re.findall(r'\w+', l)[0] for l in no_emoji if re.findall(r'\w+', l)]
-        stop_free = " ".join([i for i in only_letters if i not in stop])
-        punc_free = ''.join(ch for ch in stop_free if ch not in exclude)
-        normalized = " ".join(lemma.lemmatize(word) for word in punc_free.split())
-        print(normalized)
+        only_letters = [' '.join(re.findall(r'[a-zA-Z]+', l)).lower() for l in no_emoji if re.findall(r'[a-zA-Z]+', l)]
+        stop_free = [i for i in only_letters if i not in stop]
+        punc_free = [ch for ch in stop_free if ch not in exclude]
+        tagged = pos_tag(punc_free)
+        nouns = [word for word, pos in tagged if (pos == 'NN' or pos == 'NNP' or pos == 'NNS' or pos == 'NNPS')]
+        normalized = [lemma.lemmatize(word) for word in nouns]
         return normalized
 
     print('Clean documents...')
-    doc_clean = [clean(doc).split() for doc in documents] 
+    doc_clean = [clean(doc) for doc in documents] 
 
     print('Create dictionary of corpus...')
-    #Creating variable dictionary of courpus, where every unique term is assigned an index
+    #Creating variable dictionary of corpus, where every unique term is assigned an index
     dictionary = corpora.Dictionary(doc_clean)
+    with open(os.path.join(CURRENT_DIR, 'dictionary.pkl'), 'wb') as f:
+        pickle.dump(dictionary, f, protocol=pickle.HIGHEST_PROTOCOL)
 
     print('Processing document to bag of words...')
     # Converting list of documents (corpus) into Document Term Matrix using dictionary variable
@@ -90,7 +107,7 @@ else:
     Lda = gensim.models.ldamodel.LdaModel
 
     # Running and Trainign LDA model on the document term matrix.
-    ldamodel = Lda(doc_term_matrix, num_topics=10, id2word=dictionary, passes=50)
+    ldamodel = Lda(doc_term_matrix, num_topics=10, id2word=dictionary, passes=2)
     print('LDA model complete.')
     print('Pickling LDA model...')
     # Save model
@@ -98,16 +115,24 @@ else:
         pickle.dump(ldamodel, f, protocol=pickle.HIGHEST_PROTOCOL)
     print('Pickling complete')
 
-# Print LDA model results
-print(ldamodel.print_topics(num_topics=10, num_words=20))
-
 # Output results into CSV
 OUTPUT_PATH = os.path.join(CURRENT_DIR, 'topics.csv')
 ALT_PATH = os.path.join(CURRENT_DIR, 'topics_by_line.csv')
 lda_results_to_csv(ldamodel, OUTPUT_PATH, ALT_PATH)
 
 # Get topic distributions of each venue
-distributions = retrieve_topic_distributions(ldamodel, doc_term_matrix)
+connector = Connector()
+connector.cursor.execute('SELECT id FROM venue;')
+distribution_dict = {}
+for i, venue_id in enumerate(connector.cursor):
+    # Save vectors as values to their keys (venue IDs)
+    distribution = ldamodel[doc_term_matrix[i]]
+    avail_topics = [x[0] for x in distribution]
+    to_be_added = [x for x in list(range(10)) if x not in avail_topics]
+    for i in to_be_added:
+        distribution.append((i, 0.0))
+    distribution = sorted(distribution, key=lambda x: x[0])
+    distribution_dict[venue_id[0]] = distribution
 
-with open(os.path.join(CURRENT_DIR, 'distribution.pkl'), 'wb') as f:
-    pickle.dump(distributions, f, protocol=pickle.HIGHEST_PROTOCOL)
+with open(os.path.join(CURRENT_DIR, 'distribution_dict.pkl'), 'wb') as f:
+    pickle.dump(distribution_dict, f, protocol=pickle.HIGHEST_PROTOCOL)
